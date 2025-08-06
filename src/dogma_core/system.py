@@ -6,6 +6,8 @@ import json
 from datetime import datetime, timedelta
 from . import agents
 from . import ui
+from .persistence import DogmaRegistry
+from .exceptions import ATFieldInterference, CentralDogmaLockdown
 from rich.panel import Panel
 import random
 
@@ -25,6 +27,7 @@ class DogmaSystem:
         Inicializa o sistema, o controlador da UI e todos os agentes necessários.
         """
         self.ui = ui.UIController()
+        self.registry = DogmaRegistry()
         self._initialize_state()
         try:
             # Os agentes agora são armazenados individualmente para chamadas específicas
@@ -128,12 +131,18 @@ class DogmaSystem:
                     self._execute_paradigm_analysis(query)
                 elif command == "veto":
                     self._execute_longinus_veto(query)
+                elif command == "dialect":
+                    self._execute_dialect(query)
                 # O comando 'gendo' foi removido para manter a lógica mais simples com as novas regras,
                 # mas pode ser readicionado se necessário.
+                elif command == "diagnostic":
+                    self._execute_diagnostic()
+                elif command == "dossier":
+                    self._execute_dossier(query)
                 elif command == "help":
                     self.ui.display_help()
                 elif command == "status":
-                    self.ui.display_status()
+                    self._execute_status()
                 elif command == "clear":
                     self.ui.clear_screen()
                 elif command in ["exit", "quit", "sair"]:
@@ -142,12 +151,21 @@ class DogmaSystem:
                 else:
                     self.ui.display_error(f"Comando desconhecido: '{command}'. Digite 'help' para a lista de comandos.")
 
+            except ATFieldInterference as e:
+                self.ui.display_at_field_interference(e.agent_name)
+            except CentralDogmaLockdown as e:
+                self.ui.display_central_dogma_lockdown(e.subsystem)
             except KeyboardInterrupt:
                 self.ui.display_shutdown()
                 sys.exit(0)
             except Exception as e:
                 self.ui.display_error(f"Ocorreu um erro inesperado: {e}")
 
+
+    def _execute_status(self):
+        """ Coleta e exibe o status do sistema. """
+        status_data = self.registry.get_status()
+        self.ui.display_status(status_data)
 
     def _execute_magi_deliberation(self, query: str):
         """
@@ -275,6 +293,77 @@ class DogmaSystem:
             veto_text = self.longinus.analyze(query)
             veto_result = self._parse_analysis(veto_text)
         self.ui.display_longinus_veto(veto_result)
+
+    def _execute_dossier(self, agent_id: str):
+        """ Exibe o dossiê de um agente específico. """
+        if not agent_id:
+            self.ui.display_error("O comando 'dossier' requer o nome de um agente. Ex: dossier melchior-01")
+            return
+        self.ui.display_dossier(agent_id)
+
+    def _execute_diagnostic(self):
+        """ Executa a sequência de diagnóstico da UI. """
+        self.ui.display_diagnostic()
+
+    def _execute_dialect(self, full_input: str, num_rounds: int = 2):
+        """
+        Orquestra um debate (dialética) entre dois agentes Magi sobre uma consulta.
+        """
+        self.ui.display_system_header("DIALÉTICA MAGI")
+        parts = full_input.strip().split(maxsplit=2)
+
+        if len(parts) < 3:
+            self.ui.display_error("O comando 'dialect' requer dois IDs de agente e uma consulta. Ex: dialect melchior-01 balthasar-02 'proposta X'")
+            return
+
+        agent1_id = parts[0].lower()
+        agent2_id = parts[1].lower()
+        query = parts[2]
+
+        available_magi_agents = {
+            "melchior-01": self.melchior,
+            "balthasar-02": self.balthasar,
+            "casper-03": self.casper
+        }
+
+        agent1 = available_magi_agents.get(agent1_id)
+        agent2 = available_magi_agents.get(agent2_id)
+
+        if not agent1 or not agent2:
+            self.ui.display_error("IDs de agente inválidos. Use melchior-01, balthasar-02 ou casper-03.")
+            return
+        
+        if agent1_id == agent2_id:
+            self.ui.display_error("Os agentes devem ser diferentes para um debate.")
+            return
+
+        self.ui.console.print(f"[bold]Iniciando debate entre {agent1.name} e {agent2.name} sobre: [/bold][italic]'{query}'[/italic]\n")
+
+        current_query = query
+        agent1_last_analysis = ""
+        agent2_last_analysis = ""
+
+        for i in range(num_rounds):
+            self.ui.console.print(f"[bold yellow]---- RODADA {i+1} ----[/bold yellow]")
+
+            # Agente 1 analisa
+            with self.ui.console.status(f"[bold]({agent1.name}) Analisando...[/bold]"):
+                # Passa a análise do outro agente como contexto
+                analysis1_text = agent1.analyze(f"Consulta: {query}\n\nContexto do debate (última análise de {agent2.name}): {agent2_last_analysis}")
+                parsed_analysis1 = self._parse_analysis(analysis1_text)
+                agent1_last_analysis = parsed_analysis1["analysis"]
+            self.ui.display_agent_analysis(agent1.name, parsed_analysis1)
+
+            # Agente 2 analisa
+            with self.ui.console.status(f"[bold]({agent2.name}) Analisando...[/bold]"):
+                # Passa a análise do outro agente como contexto
+                analysis2_text = agent2.analyze(f"Consulta: {query}\n\nContexto do debate (última análise de {agent1.name}): {agent1_last_analysis}")
+                parsed_analysis2 = self._parse_analysis(analysis2_text)
+                agent2_last_analysis = parsed_analysis2["analysis"]
+            self.ui.display_agent_analysis(agent2.name, parsed_analysis2)
+
+        self.ui.console.print("[bold green]---- DEBATE CONCLUÍDO ----[/bold green]")
+        self.ui.console.print("As análises finais de cada agente durante o debate podem ser usadas para informar sua decisão na votação MAGI.")
 
     # O método _execute_gendo_synthesis foi removido para simplificar, 
     # pois sua lógica original entra em conflito com as novas regras de veto e cooldown.

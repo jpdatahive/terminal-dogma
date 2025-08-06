@@ -13,6 +13,8 @@ from rich.live import Live
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.columns import Columns
 from rich.rule import Rule
+import codecs
+
 
 # Force UTF-8 encoding
 if sys.platform == "win32":
@@ -51,6 +53,42 @@ JAPANESE_TERMS = {
     "emergency": "緊急事態", # Emergência
 }
 
+AGENT_DOSSIERS = {
+    "melchior-01": {
+        "name": "MELCHIOR-01",
+        "title": "第一の賢者、メルキオール (O Primeiro Homem Sábio)",
+        "color": "bold blue",
+        "description": "A unidade de supercomputador focada em [bold]lógica pura, análise de dados e raciocínio científico[/bold]. Melchior processa informações de forma empírica, avaliando a viabilidade e as consequências causais diretas. Sua personalidade é fria, analítica e desprovida de emoção.",
+        "activation_date": "2042-08-15",
+        "core_directive": "全ての事象を観測し、記録し、予測する (Observar, registrar e prever todos os fenômenos)."
+    },
+    "balthasar-02": {
+        "name": "BALTHASAR-02",
+        "title": "第二の賢者、バルタザール (O Segundo Homem Sábio)",
+        "color": "bold green",
+        "description": "A unidade de supercomputador responsável pela [bold]análise humanística, moral e ética[/bold]. Balthasar avalia o impacto das decisões no bem-estar humano, nos valores sociais e na dignidade individual. Sua personalidade é empática, ponderada e sábia.",
+        "activation_date": "2042-09-21",
+        "core_directive": "人類の調和と存続を最優先する (Priorizar a harmonia e a sobrevivência da humanidade)."
+    },
+    "casper-03": {
+        "name": "CASPER-03",
+        "title": "第三の賢者、カスパー (O Terceiro Homem Sábio)",
+        "color": "bold yellow",
+        "description": "A unidade de supercomputador que lida com [bold]análise estratégica, pragmatismo e execução[/bold]. Casper foca na viabilidade, alocação de recursos, riscos operacionais e no resultado prático das decisões. Sua personalidade é direta, realista e focada em resultados.",
+        "activation_date": "2042-10-05",
+        "core_directive": "最も効率的な手段で目的を達成する (Alcançar o objetivo pelos meios mais eficientes)."
+    },
+    "seele": {
+        "name": "SEELE_INTERJECTOR",
+        "title": "ゼーレ (Alma)",
+        "color": "bold magenta",
+        "description": "Um sistema de vigilância oculto que representa os interesses do comitê SEELE. Sua função é a [bold]análise de risco pessimista, identificando consequências não intencionais, piores cenários e interesses ocultos[/bold]. Opera com ceticismo e assume segundas intenções em todas as propostas.",
+        "activation_date": "Desconhecida",
+        "core_directive": "シナリオを維持し、人類の補完を遂行する (Manter o cenário e executar a instrumentalização humana)."
+    },
+    # Adicione outros agentes aqui no futuro
+}
+
 class UIController:
     """
     Gerencia toda a saída visual para o terminal usando a biblioteca Rich.
@@ -63,17 +101,20 @@ class UIController:
         self.terminal_width = self.console.size.width
         self._generate_headers()
 
-    # Adicione este método para sanitizar texto:
+
     def _sanitize_text(self, text: str) -> str:
-        """Remove caracteres problemáticos e garante UTF-8 limpo."""
-        try:
-            # Remove surrogates e caracteres problemáticos
-            clean_text = text.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore')
-            # Remove caracteres de controle exceto quebras de linha
-            clean_text = ''.join(char for char in clean_text if ord(char) >= 32 or char in '\n\r\t')
-            return clean_text
-        except:
-            return "Texto contém caracteres inválidos"
+        """
+        Sanitiza o texto para exibição segura no console, substituindo 
+        surrogates inválidos e outros caracteres problemáticos.
+        """
+        if not isinstance(text, str):
+            text = str(text)
+        
+        # A maneira mais robusta e padrão de lidar com surrogates inválidos
+        # é codificar para bytes substituindo os erros e depois decodificar de volta para string.
+        # Isso troca caracteres malformados por um caractere de substituição '',
+        # evitando que o programa quebre.
+        return text.encode('utf-8', errors='replace').decode('utf-8')
 
     def _generate_headers(self):
         """Cria e armazena todos os cabeçalhos ASCII para acesso rápido."""
@@ -218,6 +259,14 @@ Compara potencial de inovação (Adam) vs. impacto na estabilidade (Lilith).
 基本的な不可侵ルールに違反するかどうかをチェック
 Verifica se uma proposta viola regras fundamentais invioláveis.
 
+[bold yellow]dossier <agent_id>[/bold yellow] - エージェントのドシエ
+特定のエージェントの詳細なプロフィールを表示
+Exibe o perfil detalhado de um agente específico.
+
+[bold green]diagnostic[/bold green] - システム診断
+全てのサブシステムの診断シーケンスを実行
+Executa uma sequência de diagnóstico em todos os subsistemas.
+
 [bold red]gendo <query>[/bold red] - ゲンドウ最終{JAPANESE_TERMS['directive']}
 全エージェントによる完全な{JAPANESE_TERMS['analysis']}を実行し、最終{JAPANESE_TERMS['directive']}を発行
 Executa análise completa com todos os agentes e emite diretiva final.
@@ -248,41 +297,135 @@ Executa análise completa com todos os agentes e emite diretiva final.
         
         self.console.print(Columns(panels, equal=True, expand=True))
 
-    def display_status(self):
-        """Status centralizado com largura total."""
-        timestamp = datetime.now().strftime("%H時%M分%S秒")
-        
-        status_table = Table(
-            show_header=True, 
-            header_style="bold magenta", 
-            title=f"MAGI{JAPANESE_TERMS['core']} - {JAPANESE_TERMS['operational']}状態",
-            # Remove width - usa largura total
-            expand=True  # Expande para largura total
-        )
-        
-        # Colunas proporcionais à largura total
-        status_table.add_column("MAGIユニット", style="cyan", ratio=3)
-        status_table.add_column("状態", style="green", ratio=2)
-        status_table.add_column("認知負荷", style="yellow", ratio=2) 
-        status_table.add_column("最終{JAPANESE_TERMS['sync']}", style="blue", ratio=2)
+    def display_status(self, status_data: dict):
+        """Exibe o status detalhado do sistema com um layout temático aprimorado."""
+        self.display_system_header("STATUS")
 
-        systems = [
-            ("メルキオール-01", f"{JAPANESE_TERMS['operational']}", f"{random.randint(15, 35)}%"),
-            ("バルタザール-02", f"{JAPANESE_TERMS['operational']}", f"{random.randint(20, 40)}%"),
-            ("カスパー-03", f"{JAPANESE_TERMS['operational']}", f"{random.randint(10, 30)}%"),
+        # Layout principal com duas colunas
+        layout = Layout()
+        layout.split_column(
+            Layout(name="main_metrics", size=12),
+            Layout(name="paradigm_status")
+        )
+
+        # --- Coluna da Esquerda: Métricas Principais ---
+        
+        # Tabela de métricas do sistema
+        system_metrics_table = Table.grid(expand=True, padding=(0, 2))
+        system_metrics_table.add_column(style="bold cyan")
+        system_metrics_table.add_column(style="white")
+        system_metrics_table.add_row(f"{JAPANESE_TERMS['system']}稼働日数 (Dias Operacionais):", str(status_data['days_since_boot']))
+        system_metrics_table.add_row(f"総セッション数 (Sessões Totais):", str(status_data['total_sessions']))
+        system_metrics_table.add_row(f"ゼーレ介入 (Intervenções SEELE):", f"[magenta]{status_data['seele_interventions']}[/magenta]")
+        system_metrics_table.add_row(f"ロンギヌス起動 (Ativações Longinus):", f"[red]{status_data['longinus_activations']}[/red]")
+
+        # Tabela de status do MAGI
+        magi_sync_rate = random.uniform(97.5, 99.9)
+        at_field_stability = random.uniform(92.0, 99.9)
+        magi_status_table = Table.grid(expand=True, padding=(0, 2))
+        magi_status_table.add_column(style="bold yellow")
+        magi_status_table.add_column(style="white")
+        magi_status_table.add_row(f"MAGI{JAPANESE_TERMS['sync']}率 (Taxa de Sync):", f"{magi_sync_rate:.3f}%")
+        magi_status_table.add_row("A.T.フィールド安定性 (Estabilidade):", f"[green]{at_field_stability:.2f}%[/green]")
+
+        # Painel da esquerda
+        left_panel = Panel(
+            Columns([system_metrics_table, magi_status_table], equal=True, expand=True),
+            title=f"[bold green]総合{JAPANESE_TERMS['system']}状態 - Relatório de Status[/bold green]",
+            border_style="green"
+        )
+
+        # --- Coluna da Direita: Status do Paradigm ---
+
+        if status_data['can_use_paradigm']:
+            paradigm_status_text = "[bold green]起動準備完了 (PRONTO PARA ATIVAÇÃO)[/bold green]"
+            paradigm_detail_text = f"登録された使用回数 (Usos Registrados): {status_data['paradigm_uses']}"
+        else:
+            paradigm_status_text = "[bold yellow]再調整中 (RECALIBRANDO)[/bold yellow]"
+            paradigm_detail_text = f"次の起動まで (Próxima Ativação em): {status_data['days_until_paradigm']} 日 (dias)"
+
+        right_panel = Panel(
+            f"""
+[bold cyan]Paradigm {JAPANESE_TERMS['system']} Status:[/bold cyan]
+{paradigm_status_text}
+
+[dim]{paradigm_detail_text}[/dim]
+            """,
+            title=f"[bold cyan]PARADIGM - {JAPANESE_TERMS['pattern']} {JAPANESE_TERMS['analysis']}[/bold cyan]",
+            border_style="cyan"
+        )
+
+        # Monta o layout final
+        # Para simplificar, vamos usar um layout de colunas em vez do layout complexo
+        # que pode ter problemas de renderização dependendo do terminal.
+        final_columns = Columns([left_panel, right_panel], equal=True, expand=True)
+        self.console.print(final_columns)
+
+    def display_dossier(self, agent_id: str):
+        """Exibe o dossiê de um agente específico."""
+        dossier = AGENT_DOSSIERS.get(agent_id.lower())
+        if not dossier:
+            self.display_error(f"Dossiê para o agente '{agent_id}' não encontrado.")
+            return
+
+        self.display_system_header(dossier["name"])
+
+        panel_content = f"""
+[bold]{dossier['title']}[/bold]
+[dim]Data de Ativação: {dossier['activation_date']}[/dim]
+
+---
+
+[i]{dossier['description']}[/i]
+
+---
+
+[bold]Diretiva Central:[/bold]
+[i]{dossier['core_directive']}[/i]
+        """
+
+        panel = Panel(
+            panel_content,
+            title=f"[b {dossier['color']}]DOSSIÊ DE AGENTE: {dossier['name']}[/b {dossier['color']}]",
+            border_style=dossier['color'].split(' ')[1] if ' ' in dossier['color'] else dossier['color'],
+            width=self._get_responsive_width("wide")
+        )
+        self.console.print(panel)
+
+    def display_diagnostic(self):
+        """Exibe uma sequência de diagnóstico para todos os sistemas."""
+        self.display_system_header("DIAGNOSTIC")
+        
+        agents_to_check = [
+            ("MELCHIOR-01", "Lógica de Dados"),
+            ("BALTHASAR-02", "Matriz de Empatia"),
+            ("CASPER-03", "Simulador Estratégico"),
+            ("SEELE_INTERJECTOR", "Canal de Risco"),
+            ("ADAM_CATALYST", "Potencial Disruptivo"),
+            ("LILITH_FOUNDATION", "Núcleo Cultural"),
+            ("LONGINUS_VETO", "Protocolo de Veto")
         ]
 
-        for system in systems:
-            status_table.add_row(*system, timestamp)
+        self.console.print("Iniciando sequência de diagnóstico do sistema...", style="bold yellow")
 
-        self.console.print(Align.center(status_table))
+        with Progress(
+            SpinnerColumn(spinner_name="line"),
+            TextColumn("[progress.description]{task.description}"),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+            console=self.console
+        ) as progress:
+            for agent_name, description in agents_to_check:
+                task = progress.add_task(f"Verificando {agent_name}...", total=100)
+                while not progress.finished:
+                    progress.update(task, advance=random.uniform(5, 15))
+                    time.sleep(0.1)
+                
+                color = AGENT_COLORS.get(agent_name, "white").split(' ')[-1]
+                final_status = "[bold green]オンライン (ONLINE)[/bold green]"
+                self.console.print(f"-[{color}]{agent_name}[/{color}] ({description}): {final_status}")
 
-        
-        # Status adicional em japonês
-        additional_info = f"""
-A.T.フィールド: [green]安定[/green] | {JAPANESE_TERMS['sync']}率: [cyan]98.7%[/cyan] | エントリープラグ: [yellow]挿入済み[/yellow]
-        """
-        self.console.print(Panel(additional_info, border_style="dim", width=self._get_responsive_width("normal")))
+        self.console.print("\n[bold green]診断完了。全てのシステムは正常に作動中です。[/bold green]", justify="center")
+        self.console.print("[dim]Diagnostic complete. All systems are operational.[/dim]", justify="center")
 
     def display_agent_analysis(self, agent_name: str, result: dict):
         """Exibe análise de agente com elementos japoneses."""
@@ -301,16 +444,24 @@ A.T.フィールド: [green]安定[/green] | {JAPANESE_TERMS['sync']}率: [cyan]
         
         jp_name = japanese_names.get(agent_name, agent_name)
         panel_title = f"[b {color}]{jp_name} - {JAPANESE_TERMS['analysis']}受信[/b {color}]"
-        # Sanitiza o conteúdo antes de exibir
-        analysis = self._sanitize_text(result.get('analysis', ''))
-        verdict = self._sanitize_text(result.get('verdict', ''))
-        content = f"[i]{analysis}[/i]\n\n[b]{verdict}[/b]"
+        
+        # Sanitiza o conteúdo com tratamento mais robusto
+        try:
+            analysis = self._sanitize_text(result.get('analysis', 'Análise não disponível'))
+            verdict = self._sanitize_text(result.get('verdict', 'Veredito não disponível'))
+            content = f"[i]{analysis}[/i]\n\n[b]{verdict}[/b]"
+            
+            # Testa se o conteúdo pode ser renderizado
+            content.encode('utf-8')
+            
+        except Exception as e:
+            # Fallback seguro se a sanitização falhar
+            content = f"[red]Erro na exibição da análise do {agent_name}[/red]\n[dim]Conteúdo contém caracteres incompatíveis[/dim]"
         
         self.console.print(Align.center(Panel(
             content, 
             title=panel_title, 
-            border_style=color.split(' ')[1]
-            # Remove width - usa largura total
+            border_style=color.split(' ')[1] if ' ' in color else color
         )))
 
     def display_magi_decision(self, positivos: int, negativos: int):
@@ -442,7 +593,8 @@ MAGI Council Decision: [b]{decision_en} ({synthesis['magi_decision']})[/b]
     """
         self.console.print(Align.center(Panel(
             error_content, 
-            title=f"[bold red]{JAPANESE_TERMS['system']}障害[/bold red]"
+            title=f"[bold red]{JAPANESE_TERMS['system']}障害[/bold red]",
+            width=self._get_responsive_width("normal")
         )))
 
     def clear_screen(self):
@@ -515,7 +667,8 @@ MAGI Council Decision: [b]{decision_en} ({synthesis['magi_decision']})[/b]
         self.console.print(Panel(
             content,
             title=f"[bold {border_color}]A.T.フィールド干渉 - {jp_agent}[/bold {border_color}]",
-            border_style=border_color
+            border_style=border_color,
+            width=self._get_responsive_width("normal")
         ))
 
     def display_central_dogma_lockdown(self, subsystem: str):
@@ -564,28 +717,20 @@ MAGI Council Decision: [b]{decision_en} ({synthesis['magi_decision']})[/b]
         self.console.print(Panel(
             content,
             title="[bold red]システムメンテナンス / SYSTEM MAINTENANCE[/bold red]",
-            border_style="red"
+            border_style="red",
+            width=self._get_responsive_width("normal")
         ))
 
     def display_error(self, message: str):
-        """Exibe erro com detecção de tipos específicos."""
+        """Exibe erro com texto sanitizado."""
         clean_message = self._sanitize_text(str(message))
-        
-        # Verifica se é uma exceção conhecida
-        if "A.T. Field interference" in clean_message:
-            agent_name = clean_message.split("in ")[-1] if "in " in clean_message else "UNKNOWN"
-            self.display_at_field_interference(agent_name)
-        elif "Central Dogma lockdown" in clean_message:
-            subsystem = clean_message.split("- ")[-1] if "- " in clean_message else "UNKNOWN"
-            self.display_central_dogma_lockdown(subsystem)
-        else:
-            # Erro genérico
-            error_content = f"""
+        error_content = f"""
     [bold red]エラー / ERROR:[/bold red] {clean_message}
     [dim]{JAPANESE_TERMS['system']}障害が発生しました / System failure occurred[/dim]
     """
-            self.console.print(Align.center(Panel(
-                error_content, 
-                title=f"[bold red]{JAPANESE_TERMS['system']}障害[/bold red]"
-            )))
+        self.console.print(Align.center(Panel(
+            error_content, 
+            title=f"[bold red]{JAPANESE_TERMS['system']}障害[/bold red]",
+            width=self._get_responsive_width("normal")
+        )))
     

@@ -6,6 +6,8 @@ load_dotenv()
 
 LLM_MODEL_NAME="gemini-1.5-flash"
 GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY")
+if not GOOGLE_API_KEY:
+    raise ValueError("A variável de ambiente GOOGLE_API_KEY não foi definida. Crie um arquivo .env e adicione GOOGLE_API_KEY=sua_chave_aqui.")
 LLM_TEMPERATURE=0.7
 
 LONGINUS_VETO_RULES = [
