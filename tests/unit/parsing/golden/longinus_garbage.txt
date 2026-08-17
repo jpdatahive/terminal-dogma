@@ -1,0 +1,1 @@
+Resposta fora do contrato, sem o marcador binário esperado do circuit breaker.

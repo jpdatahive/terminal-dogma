@@ -1,0 +1,3 @@
+INTERVENÇÃO: NÃO
+ANÁLISE: Riscos operacionais moderados, dentro da tolerância do cenário planejado.
+ALERTA: Nenhuma ameaça estratégica iminente.

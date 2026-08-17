@@ -1,0 +1,3 @@
+INTERVENÇÃO: SIM
+ANÁLISE: A proposta cria vetores de ataque sistêmicos ao concentrar poder decisório em um único ponto de falha.
+ALERTA: Risco existencial de captura do processo deliberativo.

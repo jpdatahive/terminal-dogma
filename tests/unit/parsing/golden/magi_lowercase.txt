@@ -1,0 +1,2 @@
+Análise com marcador em minúsculas, fora do padrão esperado mas semanticamente clara.
+voto: negativo

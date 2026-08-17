@@ -1,0 +1,65 @@
+{
+  "magi_clean.txt": {
+    "parser": "magi",
+    "vote": "POSITIVO",
+    "analysis_contains": "logicamente consistente"
+  },
+  "magi_markdown_bold.txt": {
+    "parser": "magi",
+    "vote": "NEGATIVO",
+    "analysis_contains": "inconsistências graves"
+  },
+  "magi_no_verdict.txt": {
+    "parser": "magi",
+    "vote": null,
+    "analysis_contains": "prosa corrida"
+  },
+  "magi_lowercase.txt": {
+    "parser": "magi",
+    "vote": "NEGATIVO",
+    "analysis_contains": "minúsculas"
+  },
+  "seele_full.txt": {
+    "parser": "seele",
+    "intervention": true,
+    "analysis_contains": "vetores de ataque sistêmicos",
+    "alert_contains": "Risco existencial"
+  },
+  "seele_no_intervention.txt": {
+    "parser": "seele",
+    "intervention": false,
+    "analysis_contains": "Riscos operacionais moderados",
+    "alert_contains": "Nenhuma ameaça"
+  },
+  "seele_unstructured.txt": {
+    "parser": "seele",
+    "intervention": false,
+    "analysis_contains": "prosa pessimista",
+    "alert_contains": null
+  },
+  "adam_disruptive.txt": {
+    "parser": "potential",
+    "potential": "DISRUPTIVO",
+    "analysis_contains": "tornar obsoleto"
+  },
+  "lilith_forced.txt": {
+    "parser": "alignment",
+    "alignment": "FORÇADO",
+    "analysis_contains": "atrito severo"
+  },
+  "longinus_no_veto.txt": {
+    "parser": "veto",
+    "status": "NENHUM VETO",
+    "violated_rule": null
+  },
+  "longinus_triggered.txt": {
+    "parser": "veto",
+    "status": "VETO ACIONADO",
+    "violated_rule_contains": "princípios éticos fundamentais"
+  },
+  "longinus_garbage.txt": {
+    "parser": "veto",
+    "status": "INDETERMINADO",
+    "violated_rule": null
+  }
+}
