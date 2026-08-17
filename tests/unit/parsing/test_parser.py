@@ -44,6 +44,13 @@ class TestParseSeeleReport:
         assert result.analysis == text
         assert result.alert is None
 
+    def test_intervencao_sem_marcador_de_analise_usa_texto_anterior(self):
+        text = "Contexto preliminar do comitê.\nINTERVENÇÃO: SIM"
+        result = parse_seele_report(text)
+        assert result.intervention is True
+        assert result.analysis == "Contexto preliminar do comitê."
+        assert result.alert is None
+
 
 class TestParseVeto:
     def test_veto_acionado_tem_prioridade_sobre_nenhum_veto_no_texto(self):
@@ -62,3 +69,7 @@ class TestParseVeto:
         result = parse_veto("VETO ACIONADO:")
         assert result.status == VetoStatus.VETO_TRIGGERED
         assert result.violated_rule is None
+
+    def test_regra_em_negrito_e_desembrulhada(self):
+        result = parse_veto("VETO ACIONADO: **Ameaça à soberania da organização.**")
+        assert result.violated_rule == "Ameaça à soberania da organização."

@@ -63,7 +63,7 @@ def test_golden(filename: str, spec: dict):
     elif kind == "veto":
         result = parse_veto(text)
         assert result.status == VetoStatus(spec["status"])
-        if spec["violated_rule"] is None and "violated_rule_contains" not in spec:
+        if spec.get("violated_rule") is None and "violated_rule_contains" not in spec:
             assert result.violated_rule is None
         if "violated_rule_contains" in spec:
             assert result.violated_rule is not None

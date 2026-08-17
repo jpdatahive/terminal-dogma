@@ -22,9 +22,7 @@ from terminal_dogma.parsing import (
 )
 
 _ANY_TEXT = st.text()
-_CLEAN_ANALYSIS = st.text(
-    alphabet=st.characters(blacklist_categories=("Cs",)), max_size=300
-)
+_CLEAN_ANALYSIS = st.text(alphabet=st.characters(blacklist_categories=("Cs",)), max_size=300)
 
 
 class TestNeverRaises:
