@@ -1,2 +1,25 @@
+# Ambiente virtual e variáveis de ambiente
 venv/
+.venv/
 .env
+
+# Artefatos Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Cache de ferramentas
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+
+# Cobertura
+.coverage
+htmlcov/
+
+# Estado local da aplicação v2 (ver Fase 2)
+*.tmp
+*.bak

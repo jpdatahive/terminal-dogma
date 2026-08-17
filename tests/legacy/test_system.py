@@ -4,7 +4,7 @@ import sys
 import os
 
 # Adiciona o diretório src ao path para que possamos importar dogma_core
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
 from dogma_core.system import DogmaSystem
 
