@@ -8,6 +8,11 @@ dependencies = [
     "pydantic>=2.7",
 ]
 
+[project.optional-dependencies]
+gemini = [
+    "google-genai>=1.0",
+]
+
 [project.scripts]
 dogma = "terminal_dogma.__main__:main"
 
@@ -20,9 +25,11 @@ packages = ["src/terminal_dogma"]
 
 [dependency-groups]
 dev = [
+    "google-genai>=1.0",
     "hypothesis>=6.112",
     "mypy>=1.11",
     "pytest>=8.3",
+    "pytest-asyncio>=0.24",
     "pytest-cov>=5.0",
     "ruff>=0.6",
     "time-machine>=2.15",
@@ -31,6 +38,10 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--ignore=tests/legacy -q"
+asyncio_mode = "auto"
+markers = [
+    "live: testes contra APIs reais de LLM (exigem chave; skipados sem ela)",
+]
 
 [tool.coverage.run]
 source = ["src/terminal_dogma"]
