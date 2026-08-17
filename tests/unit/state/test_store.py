@@ -4,6 +4,8 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
+import pytest
+
 from terminal_dogma.state import (
     DogmaState,
     FixedClock,
@@ -61,7 +63,21 @@ class TestJsonStateStore:
         path = tmp_path / "state.json"
         store = JsonStateStore(path, clock=FixedClock(NOW))
         store.save(store.load())
-        assert not (tmp_path / "state.json.tmp").exists()
+        assert not list(tmp_path.glob("*.tmp"))
+
+    def test_falha_na_serializacao_limpa_tmp_e_propaga_erro(self, tmp_path, monkeypatch):
+        path = tmp_path / "state.json"
+        store = JsonStateStore(path, clock=FixedClock(NOW))
+        store.load()
+
+        def boom(_state, **_kwargs):
+            raise RuntimeError("falha simulada de serialização")
+
+        monkeypatch.setattr(DogmaState, "model_dump_json", boom)
+
+        with pytest.raises(RuntimeError, match="falha simulada"):
+            store.save(store.load())
+        assert not list(tmp_path.glob("*.tmp"))
 
     def test_escritas_concorrentes_mantem_arquivo_valido(self, tmp_path):
         path = tmp_path / "state.json"

@@ -83,7 +83,7 @@ class TestHourlyKey:
     def test_chave_deterministica_para_a_hora(self):
         clock = FixedClock(datetime(2026, 8, 16, 15, 30, 0))
         service = _service(clock)
-        expected = hashlib.md5(b"2026081615").hexdigest()[:8].upper()  # noqa: S324
+        expected = hashlib.md5(b"2026081615").hexdigest()[:8].upper()
         assert service.current_key() == expected
 
     def test_validate_key_tolerante_a_caixa_e_espacos(self):
