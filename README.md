@@ -1,60 +1,69 @@
 # Terminal Dogma
 
-**Terminal Dogma: Um Sistema de Deliberação Temático de Evangelion**
+![CI](https://github.com/jpdatahive/terminal-dogma/actions/workflows/ci.yml/badge.svg?branch=feat/v2-rewrite)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+![Cobertura](https://img.shields.io/badge/cobertura-100%25-brightgreen)
 
-Este projeto é uma aplicação de linha de comando (CLI) interativa inspirada no universo de *Neon Genesis Evangelion*. Ele funciona como um "sistema de deliberação" onde você pode submeter uma consulta (uma pergunta, um problema, uma ideia) e receber análises de diferentes "agentes" de IA, cada um com uma personalidade e perspectiva únicas.
+**Um sistema de deliberação temático de Neon Genesis Evangelion, rodando no seu terminal.**
 
-## Funcionalidades
+Submeta uma consulta (uma pergunta, um problema, uma ideia) e receba análises de agentes de IA
+com personalidades e diretrizes distintas: o conselho **MAGI** (lógica, ética e pragmatismo em
+votação), o comitê **SEELE** (análise de risco pessimista, monitorando tudo em background), a
+**Lança de Longinus** (veto binário contra regras invioláveis) e o sistema **Paradigm**
+(inovação vs. estabilidade, com cooldown de 100 dias).
 
-*   **Análise Multifacetada:** Receba feedback sobre suas ideias a partir de múltiplas perspectivas: lógica (Melchior), ética (Balthasar), pragmática (Casper), e mais.
-*   **Experiência Imersiva:** A interface, os nomes dos agentes, e a mecânica do sistema são todos desenhados para criar uma experiência temática.
-*   **Agentes Especializados:** Interaja com diferentes sistemas de análise, como o conselho MAGI, o comitê de risco SEELE, e o sistema de veto Longinus.
-*   **Mecânica de Jogo:** O uso de certos sistemas, como o "Paradigm", é limitado por um cooldown, adicionando um elemento de estratégia.
+> **Status:** o projeto está em reescrita completa (v2) no branch `feat/v2-rewrite` —
+> arquitetura hexagonal-lite, camada de LLM provider-agnóstica, TUI com Textual e
+> desenvolvimento orientado a testes. O código v1 permanece funcional em `src/dogma_core/`.
 
-## Instalação
+## Roadmap da v2
 
-1.  **Clone o Repositório:**
-    ```bash
-    git clone https://github.com/seu-usuario/terminal-dogma.git
-    cd terminal-dogma
-    ```
+| Fase | Entrega | Status |
+|------|---------|--------|
+| 0 | Fundação: uv, src layout, CI, AGENTS.md | ✅ concluída |
+| 1 | Domínio (vereditos, modelos, exceções) + parser tolerante | ✅ concluída |
+| 2 | Estado unificado (store atômico, cooldown, migração v1) | ✅ concluída |
+| 3 | Camada LLM provider-agnóstica (Protocol, Fake, Gemini) | 🚧 em andamento |
+| 4 | Agentes: specs + templates de prompt versionados | planejada |
+| 5 | Serviços de orquestração (MAGI paralelo, SEELE, Paradigm, Dialect) | planejada |
+| 6 | TUI com Textual | planejada |
+| 7 | Documentação final e release v2.0.0 | planejada |
 
-2.  **Crie um Ambiente Virtual:**
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
+Detalhes de design em [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) e nas
+[ADRs](docs/adr/). Como contribuir: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md).
 
-3.  **Instale as Dependências:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+## Desenvolvimento (v2)
 
-4.  **Configure sua Chave de API:**
-    *   Crie um arquivo chamado `.env` na raiz do projeto.
-    *   Adicione sua chave de API do Google ao arquivo da seguinte forma:
-        ```
-        GOOGLE_API_KEY=sua_chave_de_api_aqui
-        ```
-
-## Como Usar
-
-Execute o programa a partir da raiz do projeto:
+Requisito: [uv](https://docs.astral.sh/uv/).
 
 ```bash
+git clone https://github.com/jpdatahive/terminal-dogma.git
+cd terminal-dogma
+git checkout feat/v2-rewrite
+uv sync                 # instala dependências e o pacote em modo editável
+
+uv run pytest           # suíte v2 (76 testes, ignorando tests/legacy)
+uv run ruff check .     # lint
+uv run mypy             # typecheck estrito
+uv run dogma            # entry point (banner placeholder até a Fase 6)
+```
+
+## Aplicação v1 (legada, funcional)
+
+A v1 continua disponível enquanto a v2 é construída:
+
+```bash
+python3 -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+echo "GOOGLE_API_KEY=sua_chave" > .env
 python -m src.dogma_core.main
 ```
 
-Uma vez dentro do sistema, use os seguintes comandos seguidos por sua consulta:
-
-*   `magi <sua consulta>`: Recebe uma deliberação padrão do conselho MAGI.
-*   `seele <sua consulta>`: Realiza uma análise de risco pessimista.
-*   `paradigm <senha> <sua consulta>`: Compara o potencial de inovação com o impacto na estabilidade (uso restrito).
-*   `veto <sua consulta>`: Verifica se a sua consulta viola regras fundamentais.
-*   `help`: Mostra a lista de comandos.
-*   `status`: Exibe o status do sistema.
-*   `clear`: Limpa a tela.
-*   `exit`: Encerra o programa.
+Comandos da v1: `magi <consulta>`, `seele <consulta>`, `paradigm <senha> <consulta>`,
+`veto <consulta>`, `dialect <agente1> <agente2> <consulta>`, `status`, `help`.
 
 ---
-*Aviso: Este é um projeto para fins de entretenimento e exploração de conceitos de IA. As análises são geradas por um modelo de linguagem e não devem ser consideradas como conselhos profissionais.*
+
+*Aviso: este é um projeto para fins de entretenimento e exploração de conceitos de IA. As
+análises são geradas por modelos de linguagem e não devem ser consideradas conselhos
+profissionais.*
