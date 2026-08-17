@@ -68,3 +68,7 @@ class VetoResult(BaseModel):
         Saídas INDETERMINADO não bloqueiam o fluxo (semântica da v1).
         """
         return self.status is VetoStatus.VETO_TRIGGERED
+
+
+#: União de todos os resultados possíveis da análise de um agente.
+AnalysisResult = MagiAnalysis | SeeleReport | PotentialAssessment | AlignmentAssessment | VetoResult

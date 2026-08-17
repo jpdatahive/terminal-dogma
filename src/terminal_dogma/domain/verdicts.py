@@ -34,3 +34,13 @@ class VetoStatus(StrEnum):
     NO_VETO = "NENHUM VETO"
     VETO_TRIGGERED = "VETO ACIONADO"
     INDETERMINATE = "INDETERMINADO"
+
+
+class VerdictKind(StrEnum):
+    """Tipo de contrato de saída de um agente (define qual parser aplicar)."""
+
+    MAGI_VOTE = "magi_vote"
+    SEELE_REPORT = "seele_report"
+    POTENTIAL = "potential"
+    ALIGNMENT = "alignment"
+    VETO = "veto"

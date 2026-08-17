@@ -16,11 +16,12 @@ em negrito markdown (``**VOTO: ...**``) e espaços variáveis.
 
 import re
 import unicodedata
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import TypeVar
 
 from terminal_dogma.domain.models import (
     AlignmentAssessment,
+    AnalysisResult,
     MagiAnalysis,
     PotentialAssessment,
     SeeleReport,
@@ -30,6 +31,7 @@ from terminal_dogma.domain.verdicts import (
     LilithAlignment,
     MagiVote,
     ParadigmPotential,
+    VerdictKind,
     VetoStatus,
 )
 
@@ -166,3 +168,18 @@ def parse_veto(text: str) -> VetoResult:
         return VetoResult(status=VetoStatus.NO_VETO, raw=text)
 
     return VetoResult(status=VetoStatus.INDETERMINATE, raw=text)
+
+
+#: Despacho de tipo de veredito → função de parsing.
+PARSERS: Mapping[VerdictKind, Callable[[str], AnalysisResult]] = {
+    VerdictKind.MAGI_VOTE: parse_magi_vote,
+    VerdictKind.SEELE_REPORT: parse_seele_report,
+    VerdictKind.POTENTIAL: parse_potential,
+    VerdictKind.ALIGNMENT: parse_alignment,
+    VerdictKind.VETO: parse_veto,
+}
+
+
+def parse_output(kind: VerdictKind, text: str) -> AnalysisResult:
+    """Faz o parse de ``text`` com o parser do tipo de veredito do agente."""
+    return PARSERS[kind](text)

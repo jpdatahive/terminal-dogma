@@ -8,6 +8,7 @@ from terminal_dogma.domain.exceptions import (
 )
 from terminal_dogma.domain.models import (
     AlignmentAssessment,
+    AnalysisResult,
     MagiAnalysis,
     PotentialAssessment,
     SeeleReport,
@@ -17,12 +18,14 @@ from terminal_dogma.domain.verdicts import (
     LilithAlignment,
     MagiVote,
     ParadigmPotential,
+    VerdictKind,
     VetoStatus,
 )
 
 __all__ = [
     "ATFieldInterference",
     "AlignmentAssessment",
+    "AnalysisResult",
     "AngelPatternDetected",
     "CentralDogmaLockdown",
     "DogmaSystemException",
@@ -32,6 +35,7 @@ __all__ = [
     "ParadigmPotential",
     "PotentialAssessment",
     "SeeleReport",
+    "VerdictKind",
     "VetoResult",
     "VetoStatus",
 ]
