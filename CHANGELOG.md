@@ -19,6 +19,13 @@ provider-agnóstica, TUI com Textual, TDD em todas as fases.
   v1; `JsonStateStore` com escrita atômica; `ParadigmCooldownService` (maturação de 100
   dias, cooldown, penalidade, chave horária MD5) com `Clock` injetável; migração
   tolerante dos arquivos v1.
+- **Fase 3 — Camada LLM**: Protocol `LLMClient` assíncrono; `FakeLLMClient` scriptado;
+  `ResilientLLMClient` (timeout + retry com backoff, sleep injetável); `GeminiClient`
+  com SDK oficial (extra opcional) e tradução de erros tipados para exceções de domínio.
+- **Fase 4 — Agentes**: `AgentSpec` (id, nome, cor, contrato de veredito, template) +
+  7 prompts versionados em `agents/prompts/*.md` portados da v1 (regras do Longinus
+  embutidas no próprio template); `Agent.analyze` (render → LLM → parse) com testes de
+  contrato por agente.
 - Documentação: README reescrito, `docs/ARCHITECTURE.md`, `docs/TESTING.md`,
   `docs/CONTRIBUTING.md` e ADRs 0001–0004.
 

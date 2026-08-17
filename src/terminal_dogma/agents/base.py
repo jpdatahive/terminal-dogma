@@ -1,8 +1,9 @@
 """Agente concreto: spec + LLMClient."""
 
-from terminal_dogma.agents.spec import AgentSpec
+from terminal_dogma.agents.spec import QUERY_PLACEHOLDER, AgentSpec
 from terminal_dogma.domain.models import AnalysisResult
 from terminal_dogma.llm.base import LLMClient
+from terminal_dogma.parsing import parse_output
 
 
 class Agent:
@@ -18,4 +19,8 @@ class Agent:
         return self.spec.name
 
     async def analyze(self, query: str) -> AnalysisResult:
-        raise NotImplementedError
+        # Substituição literal (não str.format): o template é nosso e a
+        # consulta do usuário pode conter chaves sem quebrar nada.
+        prompt = self.spec.load_prompt().replace(QUERY_PLACEHOLDER, query)
+        raw = await self._client.complete(prompt)
+        return parse_output(self.spec.verdict, raw)

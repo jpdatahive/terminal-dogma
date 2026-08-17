@@ -24,9 +24,9 @@ Módulos da v2 (criados fase a fase):
 - `domain/` ✅ — modelos Pydantic, enums de veredito, exceções temáticas (zero deps externas)
 - `parsing/` ✅ — parser puro e tolerante das saídas textuais dos agentes
 - `state/` ✅ — StateStore unificado, serviço de cooldown, migração dos JSONs v1
-- `llm/` 🚧 — Protocol `LLMClient` + adaptadores (Gemini, Fake, Resilient) — Fase 3
-- `agents/` — specs de agentes + templates de prompt versionados (Fase 4)
-- `services/` — orquestração (MagiCouncil, SeeleMonitor, ParadigmService, LonginusVeto, Dialect) (Fase 5)
+- `llm/` ✅ — Protocol `LLMClient` + adaptadores (Gemini, Fake, Resilient)
+- `agents/` ✅ — specs de agentes + templates de prompt versionados (Fase 4)
+- `services/` 🚧 — orquestração (MagiCouncil, SeeleMonitor, ParadigmService, LonginusVeto, Dialect) (Fase 5)
 - `tui/` — app Textual (Fase 6)
 
 Documentação: `docs/ARCHITECTURE.md`, `docs/TESTING.md`, `docs/CONTRIBUTING.md`,

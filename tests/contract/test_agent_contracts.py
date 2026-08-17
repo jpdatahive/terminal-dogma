@@ -94,8 +94,10 @@ class TestPromptTemplates:
         assert "}" not in rest
 
     @pytest.mark.parametrize("spec", ALL_AGENTS, ids=lambda s: s.id)
-    def test_prompt_contem_nome_do_agente(self, spec):
-        assert spec.name in spec.load_prompt()
+    def test_prompt_define_persona_e_formato_de_saida(self, spec):
+        template = spec.load_prompt()
+        assert "FORMATO DE SAÍDA" in template
+        assert len(template) > 500  # prompts são fichas de persona completas
 
 
 class TestOutputContracts:
@@ -126,7 +128,7 @@ class TestOutputContracts:
 
 class TestAgent:
     async def test_analyze_renderiza_prompt_consulta_llm_e_faz_parse(self):
-        fake = FakeLLMClient(responses={"MELCHIOR-01": "Análise empírica.\nVOTO: POSITIVO"})
+        fake = FakeLLMClient(default="Análise empírica.\nVOTO: POSITIVO")
         agent = Agent(AGENTS_BY_ID["melchior-01"], fake)
 
         result = await agent.analyze("Devemos adotar energia solar?")

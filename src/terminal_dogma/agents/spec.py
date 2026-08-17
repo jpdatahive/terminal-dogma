@@ -1,7 +1,7 @@
 """Especificações estáticas dos agentes (dados, não comportamento)."""
 
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import cache
 from importlib.resources import files
 
 from terminal_dogma.domain.verdicts import VerdictKind
@@ -10,7 +10,7 @@ from terminal_dogma.domain.verdicts import VerdictKind
 QUERY_PLACEHOLDER = "{query}"
 
 
-@lru_cache(maxsize=None)
+@cache
 def _read_prompt(filename: str) -> str:
     return (
         files("terminal_dogma.agents")
@@ -32,4 +32,4 @@ class AgentSpec:
 
     def load_prompt(self) -> str:
         """Carrega o template de prompt versionado (cacheado)."""
-        raise NotImplementedError
+        return _read_prompt(self.prompt_file)
