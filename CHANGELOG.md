@@ -25,7 +25,9 @@ provider-agnóstica, TUI com Textual, TDD em todas as fases.
 - **Fase 4 — Agentes**: `AgentSpec` (id, nome, cor, contrato de veredito, template) +
   7 prompts versionados em `agents/prompts/*.md` portados da v1 (regras do Longinus
   embutidas no próprio template); `Agent.analyze` (render → LLM → parse) com testes de
-  contrato por agente.
+- **Fase 5 — Serviços de orquestração**: `MagiCouncil` (deliberação tripartite paralela com `asyncio.gather`), `LonginusVetoService` (circuit breaker e registro de violações), `SeeleMonitor` (vigilância em background e análise explícita), `ParadigmService` (simulação ADAM vs. LILITH com trava de maturação e chave horária), `DialectService` (debate dialético em turnos), `StatusService` e `DossierService`.
+- **Fase 6 — TUI com Textual**: `DogmaApp` com interface assíncrona, widgets temáticos (`MagiDeliberationWidget`, `SeeleWidget`, `ParadigmWidget`, `VetoWidget`, `DialectWidget`, `DossierWidget`, `StatusWidget`, `StatusBar`, `HeaderWidget`, `HelpWidget`), histórico de deliberações e suíte de testes com Textual Pilot.
+- **Fase 7 — Release e Documentação**: `README.md` atualizado, auto-migração de arquivos v1 ao inicializar, 201 testes (>99% de cobertura) e conformidade completa com a especificação v2.
 - Documentação: README reescrito, `docs/ARCHITECTURE.md`, `docs/TESTING.md`,
   `docs/CONTRIBUTING.md` e ADRs 0001–0004.
 

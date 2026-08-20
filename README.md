@@ -12,9 +12,8 @@ votação), o comitê **SEELE** (análise de risco pessimista, monitorando tudo 
 **Lança de Longinus** (veto binário contra regras invioláveis) e o sistema **Paradigm**
 (inovação vs. estabilidade, com cooldown de 100 dias).
 
-> **Status:** o projeto está em reescrita completa (v2) no branch `feat/v2-rewrite` —
-> arquitetura hexagonal-lite, camada de LLM provider-agnóstica, TUI com Textual e
-> desenvolvimento orientado a testes. O código v1 permanece funcional em `src/dogma_core/`.
+> **Status:** reescrita completa (v2) concluída — arquitetura hexagonal-lite,
+> camada de LLM provider-agnóstica, TUI reativa com Textual e desenvolvimento orientado a testes (100% TDD).
 
 ## Roadmap da v2
 
@@ -23,44 +22,50 @@ votação), o comitê **SEELE** (análise de risco pessimista, monitorando tudo 
 | 0 | Fundação: uv, src layout, CI, AGENTS.md | ✅ concluída |
 | 1 | Domínio (vereditos, modelos, exceções) + parser tolerante | ✅ concluída |
 | 2 | Estado unificado (store atômico, cooldown, migração v1) | ✅ concluída |
-| 3 | Camada LLM provider-agnóstica (Protocol, Fake, Gemini) | 🚧 em andamento |
-| 4 | Agentes: specs + templates de prompt versionados | planejada |
-| 5 | Serviços de orquestração (MAGI paralelo, SEELE, Paradigm, Dialect) | planejada |
-| 6 | TUI com Textual | planejada |
-| 7 | Documentação final e release v2.0.0 | planejada |
+| 3 | Camada LLM provider-agnóstica (Protocol, Fake, Resilient, Gemini) | ✅ concluída |
+| 4 | Agentes: specs + templates de prompt versionados | ✅ concluída |
+| 5 | Serviços de orquestração (MAGI paralelo, SEELE, Paradigm, Dialect, Status, Dossier) | ✅ concluída |
+| 6 | TUI com Textual (widgets reativos, command input, Textual Pilot) | ✅ concluída |
+| 7 | Documentação final e release v2.0.0 | ✅ concluída |
 
 Detalhes de design em [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) e nas
 [ADRs](docs/adr/). Como contribuir: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md).
 
-## Desenvolvimento (v2)
+## Execução e Desenvolvimento (v2)
 
-Requisito: [uv](https://docs.astral.sh/uv/).
+Requisito: [uv](https://docs.astral.sh/uv/) e Python 3.11+.
 
 ```bash
 git clone https://github.com/jpdatahive/terminal-dogma.git
 cd terminal-dogma
-git checkout feat/v2-rewrite
-uv sync                 # instala dependências e o pacote em modo editável
+uv sync                  # instala dependências e cria o ambiente virtual
 
-uv run pytest           # suíte v2 (76 testes, ignorando tests/legacy)
-uv run ruff check .     # lint
-uv run mypy             # typecheck estrito
-uv run dogma            # entry point (banner placeholder até a Fase 6)
+# Configurar API Key (opcional para modo offline/demo com FakeLLM)
+export GOOGLE_API_KEY="sua_chave_gemini"
+
+# Iniciar a TUI do Terminal Dogma
+uv run dogma
 ```
 
-## Aplicação v1 (legada, funcional)
+### Comandos do Terminal Dogma (TUI)
 
-A v1 continua disponível enquanto a v2 é construída:
+- `magi <consulta>` — Deliberação tripartite MAGI (Melchior, Balthasar, Casper) com monitoramento SEELE em paralelo
+- `seele <consulta>` — Análise de risco pessimista e conservadora do comitê SEELE
+- `paradigm [<chave>] <consulta>` — Simulação Progenitora (ADAM vs. LILITH) com ciclo de resfriamento de 100 dias
+- `veto <consulta>` — Verificação direta de regras invioláveis pela Lança de Longinus
+- `dialect <agente1> <agente2> <consulta>` — Debate dialético em turnos entre duas unidades MAGI
+- `dossier <agente_id>` — Consulta detalhada do perfil e diretriz central de um agente
+- `status` — Relatório operacional, contadores e chave horária MD5
+- `clear` — Limpa o histórico da tela
+- `exit` / `quit` / `sair` — Encerra a aplicação
+
+### Verificação de Qualidade e Testes
 
 ```bash
-python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-echo "GOOGLE_API_KEY=sua_chave" > .env
-python -m src.dogma_core.main
+uv run pytest --cov=src/terminal_dogma --cov-report=term-missing   # 201 testes (>99% cobertura)
+uv run ruff check . && uv run ruff format --check .                # linter e formato
+uv run mypy                                                        # tipagem estrita
 ```
-
-Comandos da v1: `magi <consulta>`, `seele <consulta>`, `paradigm <senha> <consulta>`,
-`veto <consulta>`, `dialect <agente1> <agente2> <consulta>`, `status`, `help`.
 
 ---
 
