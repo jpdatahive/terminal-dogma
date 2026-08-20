@@ -89,10 +89,11 @@ veredito. Tolerante a caixa alta/baixa, ausência de acentos, negrito markdown
 - `status.py` — `StatusService`: métricas operacionais consolidadas e contadores de sessão.
 - `dossier.py` — `DossierService`: consulta a perfis e diretrizes centrais dos agentes.
 
-## Módulos planejados
+### `tui/` (Fase 6)
 
-- **`tui/` (Fase 6)** — app Textual: painéis MAGI ao vivo, StatusBar com cooldown,
-  command palette, telas de help/dossiê.
+- `app.py` — `DogmaApp` (Textual App), orquestra o ciclo de vida da interface, injeção de dependências e despacho de comandos assíncronos.
+- `widgets.py` — componentes temáticos de exibição: `HeaderWidget`, `StatusBar`, `MagiDeliberationWidget`, `SeeleWidget`, `ParadigmWidget`, `VetoWidget`, `DialectWidget`, `DossierWidget`, `StatusWidget`, `HelpWidget` e `ErrorWidget`.
+
 
 ## Decisões registradas
 
