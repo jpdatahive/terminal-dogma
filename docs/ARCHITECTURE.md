@@ -65,15 +65,32 @@ veredito. Tolerante a caixa alta/baixa, ausência de acentos, negrito markdown
 - `migration.py` — `migrate_legacy`/`migrate_into`: mescla tolerante dos dois arquivos
   v1 (first_boot mais antigo; lock tem precedência no último uso; contadores do registry).
 
+### `llm/` (Fase 3)
+
+- `base.py` — Protocol assíncrono `LLMClient.complete(prompt) -> str`.
+- `fake.py` — `FakeLLMClient` scriptado para a suíte de testes.
+- `resilient.py` — `ResilientLLMClient` (timeout + retry com backoff exponencial e sleep injetável).
+- `gemini.py` — adaptador Gemini via SDK oficial `google-genai` (import lazy, extra opcional).
+
+### `agents/` (Fase 4)
+
+- `spec.py` — `AgentSpec` imutável (`id`, `name`, `color`, `verdict`, `prompt_file`).
+- `registry.py` — catálogo estático dos 7 agentes temáticos (`MELCHIOR`, `BALTHASAR`, `CASPER`, `SEELE`, `ADAM`, `LILITH`, `LONGINUS`).
+- `base.py` — `Agent` (combina spec + `LLMClient`, renderiza prompt seguro com `{query}` e faz parsing tipado).
+- `prompts/` — templates markdown versionados para cada agente.
+
+### `services/` (Fase 5)
+
+- `veto.py` — `LonginusVetoService`: verificação de regras invioláveis e registro de ativações.
+- `magi.py` — `MagiCouncil`: deliberação em paralelo (`asyncio.gather`) com circuit breaker de veto.
+- `seele.py` — `SeeleMonitor`: monitoramento silencioso em background e análise explícita com contagem de intervenções.
+- `paradigm.py` — `ParadigmService`: orquestração Progenitora (ADAM vs. LILITH em paralelo), travas de maturação/cooldown, validação de chave horária e penalidade de veto.
+- `dialect.py` — `DialectService`: debate dialético multi-rodadas com alternância de contexto cruzado entre unidades MAGI.
+- `status.py` — `StatusService`: métricas operacionais consolidadas e contadores de sessão.
+- `dossier.py` — `DossierService`: consulta a perfis e diretrizes centrais dos agentes.
+
 ## Módulos planejados
 
-- **`llm/` (Fase 3)** — Protocol `LLMClient.complete(prompt) -> str` assíncrono;
-  `FakeLLMClient` scriptado; `ResilientLLMClient` (timeout + retry com backoff);
-  adaptador Gemini (SDK oficial `google-genai`, extra opcional).
-- **`agents/` (Fase 4)** — `AgentSpec` (id, nome, cor, template, tipo de veredito) +
-  prompts em arquivos `.md` versionados, portados da v1.
-- **`services/` (Fase 5)** — orquestração assíncrona: MAGI em paralelo
-  (`asyncio.gather`), SEELE em background, fluxo Paradigm com cooldown+chave, Dialect.
 - **`tui/` (Fase 6)** — app Textual: painéis MAGI ao vivo, StatusBar com cooldown,
   command palette, telas de help/dossiê.
 
