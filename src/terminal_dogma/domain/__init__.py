@@ -7,11 +7,17 @@ from terminal_dogma.domain.exceptions import (
     DogmaSystemException,
 )
 from terminal_dogma.domain.models import (
+    AgentDossier,
     AlignmentAssessment,
     AnalysisResult,
+    DialectDebate,
+    DialectRound,
     MagiAnalysis,
+    MagiDeliberation,
+    ParadigmExecution,
     PotentialAssessment,
     SeeleReport,
+    SystemStatus,
     VetoResult,
 )
 from terminal_dogma.domain.verdicts import (
@@ -24,17 +30,23 @@ from terminal_dogma.domain.verdicts import (
 
 __all__ = [
     "ATFieldInterference",
+    "AgentDossier",
     "AlignmentAssessment",
     "AnalysisResult",
     "AngelPatternDetected",
     "CentralDogmaLockdown",
+    "DialectDebate",
+    "DialectRound",
     "DogmaSystemException",
     "LilithAlignment",
     "MagiAnalysis",
+    "MagiDeliberation",
     "MagiVote",
+    "ParadigmExecution",
     "ParadigmPotential",
     "PotentialAssessment",
     "SeeleReport",
+    "SystemStatus",
     "VerdictKind",
     "VetoResult",
     "VetoStatus",
