@@ -279,7 +279,11 @@ def test_default_factories(monkeypatch, tmp_path):
     client_gemini = _default_client()
     assert client_gemini is not None
 
-    # Default store
+    # Default store com migração legada
     monkeypatch.setenv("HOME", str(tmp_path))
+    legacy_reg = tmp_path / "dogma_registry.json"
+    legacy_reg.write_text('{"total_sessions": 42}', encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
     store = _default_store()
     assert store is not None
+    assert store.load().total_sessions == 42

@@ -58,11 +58,19 @@ def _default_client() -> LLMClient:
 
 
 def _default_store() -> StateStore:
-    """Cria ou localiza o store de persistência padrão."""
+    """Cria ou localiza o store de persistência padrão, migrando v1 se necessário."""
     config_dir = Path.home() / ".config" / "terminal-dogma"
     config_dir.mkdir(parents=True, exist_ok=True)
     store_file = config_dir / "state.json"
-    return JsonStateStore(store_file)
+    store = JsonStateStore(store_file)
+    if not store_file.exists():
+        reg = Path("dogma_registry.json")
+        lock = Path("paradigm_lock.json")
+        if reg.exists() or lock.exists():
+            from terminal_dogma.state.migration import migrate_into
+
+            migrate_into(store, reg if reg.exists() else None, lock if lock.exists() else None)
+    return store
 
 
 class DogmaApp(App[None]):
