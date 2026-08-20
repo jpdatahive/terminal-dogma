@@ -1,11 +1,12 @@
-"""Teste de fumaça do entry point do pacote (Fase 0)."""
+"""Teste de fumaça do entry point do pacote."""
 
-from terminal_dogma import __version__
+from unittest.mock import patch
+
 from terminal_dogma.__main__ import main
 
 
-def test_main_imprime_banner_com_versao(capsys):
-    main()
-    out = capsys.readouterr().out
-    assert "TERMINAL DOGMA" in out
-    assert __version__ in out
+def test_main_executa_app_textual():
+    with patch("terminal_dogma.__main__.DogmaApp") as mock_app_cls:
+        main()
+        mock_app_cls.assert_called_once()
+        mock_app_cls.return_value.run.assert_called_once()
