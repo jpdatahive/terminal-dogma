@@ -40,10 +40,14 @@ git clone https://github.com/jpdatahive/terminal-dogma.git
 cd terminal-dogma
 uv sync                  # instala dependências e cria o ambiente virtual
 
-# Configurar API Key (opcional para modo offline/demo com FakeLLM)
+# Opção A: Usar com Ollama (local e gratuito)
+ollama serve &
+export OLLAMA_MODEL="llama3.2"  # ou mistral, qwen2.5, etc.
+
+# Opção B: Usar com Google Gemini
 export GOOGLE_API_KEY="sua_chave_gemini"
 
-# Iniciar a TUI do Terminal Dogma
+# Iniciar a TUI do Terminal Dogma (sem variáveis, roda em modo demo com FakeLLM)
 uv run dogma
 ```
 

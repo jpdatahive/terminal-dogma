@@ -21,7 +21,7 @@ provider-agnóstica, TUI com Textual, TDD em todas as fases.
   tolerante dos arquivos v1.
 - **Fase 3 — Camada LLM**: Protocol `LLMClient` assíncrono; `FakeLLMClient` scriptado;
   `ResilientLLMClient` (timeout + retry com backoff, sleep injetável); `GeminiClient`
-  com SDK oficial (extra opcional) e tradução de erros tipados para exceções de domínio.
+  com SDK oficial (extra opcional); `OllamaClient` para modelos locais e tradução de erros tipados para exceções de domínio.
 - **Fase 4 — Agentes**: `AgentSpec` (id, nome, cor, contrato de veredito, template) +
   7 prompts versionados em `agents/prompts/*.md` portados da v1 (regras do Longinus
   embutidas no próprio template); `Agent.analyze` (render → LLM → parse) com testes de

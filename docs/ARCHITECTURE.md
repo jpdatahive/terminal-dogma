@@ -71,6 +71,7 @@ veredito. Tolerante a caixa alta/baixa, ausência de acentos, negrito markdown
 - `fake.py` — `FakeLLMClient` scriptado para a suíte de testes.
 - `resilient.py` — `ResilientLLMClient` (timeout + retry com backoff exponencial e sleep injetável).
 - `gemini.py` — adaptador Gemini via SDK oficial `google-genai` (import lazy, extra opcional).
+- `ollama.py` — adaptador Ollama para modelos locais via API REST assíncrona (`/api/generate`).
 
 ### `agents/` (Fase 4)
 
