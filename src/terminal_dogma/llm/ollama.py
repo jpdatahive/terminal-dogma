@@ -67,7 +67,10 @@ class OllamaClient:
                 raise ATFieldInterference(agent_name=self.agent_name or "Ollama") from e
             raise CentralDogmaLockdown(subsystem=self.agent_name or "Ollama") from e
         except (httpx.ConnectError, httpx.TimeoutException, httpx.NetworkError) as e:
-            raise CentralDogmaLockdown(subsystem=f"Ollama ({self.host})") from e
+            raise CentralDogmaLockdown(
+                subsystem=f"Servidor Ollama inacessível em {self.host}. "
+                "Execute 'ollama serve' no terminal para iniciar o serviço local."
+            ) from e
         except Exception as e:
             raise CentralDogmaLockdown(subsystem=f"Ollama ({e})") from e
 

@@ -547,3 +547,28 @@ class ErrorWidget(Widget):
             style="dim",
         )
         return Panel(text, title="[bold red]FALHA DE COMANDO[/bold red]", border_style="red")
+
+
+class ProcessingWidget(Widget):
+    """Exibe indicador visual de deliberação em andamento."""
+
+    def __init__(
+        self,
+        command_label: str,
+        name: str | None = None,
+        id: str | None = None,
+        classes: str | None = None,
+        disabled: bool = False,
+    ) -> None:
+        super().__init__(name=name, id=id, classes=classes, disabled=disabled)
+        self.command_label = command_label
+
+    def render(self) -> RenderableType:
+        text = Text()
+        text.append("⚡ SINCRONIZANDO COM O CENTRAL DOGMA... ", style="bold yellow")
+        text.append(f"[{self.command_label}]\n", style="dim")
+        text.append(
+            "Conectando aos agentes neurais e processando deliberação...",
+            style="italic cyan",
+        )
+        return Panel(text, border_style="yellow")

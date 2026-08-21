@@ -3,6 +3,7 @@
 import os
 from pathlib import Path
 
+from textual import events
 from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Input
@@ -34,6 +35,7 @@ from terminal_dogma.tui.widgets import (
     HelpWidget,
     MagiDeliberationWidget,
     ParadigmWidget,
+    ProcessingWidget,
     SeeleWidget,
     StatusBar,
     StatusWidget,
@@ -155,6 +157,16 @@ class DogmaApp(App[None]):
     def on_mount(self) -> None:
         cmd_input = self.query_one(Input)
         cmd_input.focus()
+        self.run_worker(self._mount_initial_help())
+
+    async def _mount_initial_help(self) -> None:
+        output = self.query_one("#output-container", VerticalScroll)
+        await output.mount(HelpWidget())
+
+    def on_key(self, event: events.Key) -> None:
+        cmd_input = self.query_one(Input)
+        if not cmd_input.has_focus:
+            cmd_input.focus()
 
     async def on_input_submitted(self, event: Input.Submitted) -> None:
         raw_text = event.value.strip()
@@ -183,9 +195,19 @@ class DogmaApp(App[None]):
         status_bar = self.query_one(StatusBar)
         status_bar.refresh()
 
-        self.run_worker(self._dispatch_command(command, args))
+        output = self.query_one("#output-container", VerticalScroll)
+        processing = ProcessingWidget(f"{command} {args}".strip())
+        await output.mount(processing)
+        output.scroll_end(animate=False)
 
-    async def _dispatch_command(self, command: str, args: str) -> None:
+        self.run_worker(self._dispatch_command(command, args, processing))
+
+    async def _dispatch_command(
+        self,
+        command: str,
+        args: str,
+        processing: ProcessingWidget | None = None,
+    ) -> None:
         output = self.query_one("#output-container", VerticalScroll)
 
         try:
@@ -289,6 +311,9 @@ class DogmaApp(App[None]):
             await output.mount(ErrorWidget(str(e)))
         except Exception as e:
             await output.mount(ErrorWidget(f"Erro inesperado no subsistema: {e}"))
+        finally:
+            if processing is not None:
+                await processing.remove()
 
         status_bar = self.query_one(StatusBar)
         status_bar.refresh()

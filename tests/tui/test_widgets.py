@@ -201,3 +201,10 @@ def test_dialect_widget_render():
 def test_error_widget_render():
     widget = ErrorWidget("Mensagem de erro de teste")
     assert widget.render() is not None
+
+
+def test_processing_widget_render():
+    from terminal_dogma.tui.widgets import ProcessingWidget
+
+    widget = ProcessingWidget("magi Consulta teste")
+    assert widget.render() is not None

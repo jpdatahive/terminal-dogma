@@ -80,6 +80,7 @@ class TestDogmaApp:
         async with test_app.run_test() as pilot:
             assert pilot.app.query_one(StatusBar) is not None
             assert pilot.app.query_one(Input) is not None
+            assert len(pilot.app.query(HelpWidget)) >= 1
 
     async def test_help_command(self, test_app):
         async with test_app.run_test() as pilot:
@@ -89,7 +90,7 @@ class TestDogmaApp:
             await pilot.pause()
 
             help_widgets = pilot.app.query(HelpWidget)
-            assert len(help_widgets) == 1
+            assert len(help_widgets) >= 2
 
     async def test_status_command(self, test_app):
         async with test_app.run_test() as pilot:
@@ -183,15 +184,20 @@ class TestDogmaApp:
     async def test_clear_command(self, test_app):
         async with test_app.run_test() as pilot:
             input_widget = pilot.app.query_one(Input)
-            input_widget.value = "help"
-            await pilot.press("enter")
-            await pilot.pause()
-            assert len(pilot.app.query(HelpWidget)) == 1
+            assert len(pilot.app.query(HelpWidget)) >= 1
 
             input_widget.value = "clear"
             await pilot.press("enter")
             await pilot.pause()
             assert len(pilot.app.query(HelpWidget)) == 0
+
+    async def test_autofocus_on_key(self, test_app):
+        from textual import events
+
+        async with test_app.run_test() as pilot:
+            event = events.Key("a", "a")
+            pilot.app.on_key(event)
+            assert pilot.app.query_one(Input).has_focus is True
 
     async def test_unknown_command(self, test_app):
         async with test_app.run_test() as pilot:
