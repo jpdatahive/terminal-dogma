@@ -43,6 +43,14 @@ from terminal_dogma.tui.widgets import (
 
 def _default_client() -> LLMClient:
     """Instancia o cliente padrão conforme variáveis de ambiente."""
+    provider = os.environ.get("LLM_PROVIDER", "").lower()
+
+    if provider == "ollama" or os.environ.get("OLLAMA_MODEL") or os.environ.get("OLLAMA_HOST"):
+        from terminal_dogma.llm.ollama import OllamaClient
+        from terminal_dogma.llm.resilient import ResilientLLMClient
+
+        return ResilientLLMClient(OllamaClient.from_env())
+
     api_key = os.environ.get("GOOGLE_API_KEY")
     if api_key:
         try:

@@ -3,11 +3,13 @@
 from terminal_dogma.llm.base import LLMClient
 from terminal_dogma.llm.fake import FakeLLMClient
 from terminal_dogma.llm.gemini import GeminiClient
+from terminal_dogma.llm.ollama import OllamaClient
 from terminal_dogma.llm.resilient import ResilientLLMClient
 
 __all__ = [
     "FakeLLMClient",
     "GeminiClient",
     "LLMClient",
+    "OllamaClient",
     "ResilientLLMClient",
 ]
