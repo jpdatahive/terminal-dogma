@@ -1,6 +1,6 @@
 [project]
 name = "terminal-dogma"
-version = "2.0.0.dev0"
+version = "2.0.0"
 description = "Sistema de deliberação temático de Neon Genesis Evangelion com agentes de IA"
 readme = "README.md"
 requires-python = ">=3.11"

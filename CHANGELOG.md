@@ -2,7 +2,7 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
-## [Não lançado] — branch `feat/v2-rewrite`
+## [2.0.0] — 2026-08-20
 
 Reescrita completa do projeto (v2): arquitetura hexagonal-lite, camada de LLM
 provider-agnóstica, TUI com Textual, TDD em todas as fases.
