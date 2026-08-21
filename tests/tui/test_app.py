@@ -274,10 +274,18 @@ def test_default_factories(monkeypatch, tmp_path):
     client_fake = _default_client()
     assert isinstance(client_fake, FakeLLMClient)
 
-    # Com chave
+    # Com chave Gemini
     monkeypatch.setenv("GOOGLE_API_KEY", "test-key")
+    monkeypatch.delenv("LLM_PROVIDER", raising=False)
+    monkeypatch.delenv("OLLAMA_MODEL", raising=False)
+    monkeypatch.delenv("OLLAMA_HOST", raising=False)
     client_gemini = _default_client()
     assert client_gemini is not None
+
+    # Com Ollama
+    monkeypatch.setenv("OLLAMA_MODEL", "llama3.2")
+    client_ollama = _default_client()
+    assert client_ollama is not None
 
     # Default store com migração legada
     monkeypatch.setenv("HOME", str(tmp_path))
